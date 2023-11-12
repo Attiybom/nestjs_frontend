@@ -52,9 +52,9 @@ const onMenuSelect = (name: any) => {
 	// console.log('menu', menu)
 };
 
-const handleNavClick = (routeName: string = 'home') => {
+const handleNavClick = (routeName: string = 'dashboard') => {
 	router.push(routeName);
-	console.log('handleNavClick', routeName)
+	console.log('handleNavClick', routeName);
 	onMenuSelect(routeName);
 };
 </script>
@@ -71,6 +71,13 @@ const handleNavClick = (routeName: string = 'home') => {
 			active-text-color="#ffcc40"
 			text-color="#fff"
 		>
+			<el-menu-item :index="'home'" @click="handleNavClick()">
+				<!-- <el-icon><PictureRounded /></el-icon> -->
+				<div class="logo-container">
+					<img src="../assets/vue.svg" alt="attiy-vue-template" />
+				</div>
+				<template #title>attiy-vue-template</template>
+			</el-menu-item>
 			<el-menu-item
 				v-for="item in menus"
 				:index="item.path"
@@ -87,6 +94,16 @@ const handleNavClick = (routeName: string = 'home') => {
 </template>
 
 <style lang="scss" scoped>
+.logo-container {
+	display: flex; /* 使用flex布局 */
+	align-items: center; /* 垂直居中 */
+	justify-content: center; /* 水平居中 */
+	img {
+		width: 18px;
+		height: 18px;
+		margin-right: 5px;
+	}
+}
 .el-menu-vertical-demo:not(.el-menu--collapse) {
 	width: 100%;
 	min-height: 100%;
