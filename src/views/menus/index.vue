@@ -1,12 +1,12 @@
-<script setup>
+<script setup lang="ts">
 
 
 </script>
 
 <template>
-  <div class="dashboard">
+  <div class="menus">
     <h2>
-      dashboard
+      menus
     </h2>
     <div>
 
@@ -14,5 +14,5 @@
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 </style>

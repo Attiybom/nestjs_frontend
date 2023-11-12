@@ -1,12 +1,12 @@
-<script setup>
+<script setup lang="ts">
 
 
 </script>
 
 <template>
-  <div class="dashboard">
+  <div class="roles">
     <h2>
-      dashboard
+      roles
     </h2>
     <div>
 
@@ -14,5 +14,5 @@
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 </style>
