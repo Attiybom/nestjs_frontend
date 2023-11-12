@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 
 // 表单实体
 const formRef = ref(null)
@@ -12,8 +13,8 @@ const rules = reactive({
 
 // 表单信息
 const userInfo = reactive({
-  username: '',
-  password: '',
+  username: 'email123@gmail.com',
+  password: 'qwe123',
 })
 
 
@@ -51,9 +52,11 @@ function validatePass2(rule, value, callback) {
   }
 }
 
+const router = useRouter()
 // 表单提交
 function submitForm() {
   console.log('submitForm', userInfo)
+  router.push('/home')
 }
 
 </script>

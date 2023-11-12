@@ -4,11 +4,6 @@ import { App } from 'vue'
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: () => import('@/views/HomeView.vue')
-  },
-  {
     path: '/login',
     name: 'login',
     component: () => import('@/views/login/LoginView.vue')
@@ -17,6 +12,18 @@ const routes = [
     path: '/register',
     name: 'register',
     component: () => import('@/views/login/RegisterView.vue')
+  },
+  {
+    path: '/home',
+    name: 'home',
+    redirect: '/home/dashboard',
+    component: () => import('@/layouts/default.vue'),
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/dashboard/index.vue')
+      }
+    ]
   },
 ] as RouteRecordRaw[]
 
