@@ -33,7 +33,8 @@ const routes = [
         name: 'dashboard',
         component: () => import('@/views/dashboard/index.vue'),
         meta: {
-          title: '控制台'
+          title: '控制台',
+          icon: 'HomeFilled'
         },
       },
       {
@@ -41,7 +42,8 @@ const routes = [
         name: 'users',
         component: () => import('@/views/users/index.vue'),
         meta: {
-          title: '用户管理'
+          title: '用户管理',
+          icon: 'User'
         },
       },
       {
@@ -49,7 +51,8 @@ const routes = [
         name: 'menus',
         component: () => import('@/views/menus/index.vue'),
         meta: {
-          title: '菜单管理'
+          title: '菜单管理',
+          icon: 'Menu'
         },
       },
       {
@@ -57,7 +60,8 @@ const routes = [
         name: 'roles',
         component: () => import('@/views/roles/index.vue'),
         meta: {
-          title: '角色管理'
+          title: '角色管理',
+          icon: 'setting'
         },
       },
     ]

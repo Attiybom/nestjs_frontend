@@ -4,4 +4,5 @@ export interface MenusItem {
 	name: string;
 	path: string;
 	routeName?: string;
+	icon?: string
 }

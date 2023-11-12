@@ -13,7 +13,6 @@ const activeMenu = ref('dashboard');
 // 设置当前激活的菜单项
 const updateActiveMenu = () => {
 	// 逻辑：根据路由状态设置激活项，这里的route.path是当前路由的完整路径
-	console.log('route', route);
 	const routeInfo = route.name || route.path;
 	activeMenu.value = routeInfo as string;
 };
@@ -30,24 +29,34 @@ const { isCollapse, menus } = defineProps({
 		type: Boolean,
 		default: false,
 	},
-	// sidebarWidth: {
-	// 	type: String,
-	// 	default: '200px'
-	// },
+	sidebarWidth: {
+		type: String,
+		default: '200px',
+	},
 	menus: {
 		type: Array as PropType<Array<MenusItem>>,
 		default: () => [] as MenusItem[],
 	},
+	tagsList: {
+		type: Array,
+		default: () => [],
+	},
 });
 
+// 页签
+const emit = defineEmits(['menu-selected']);
+
+const onMenuSelect = (name: any) => {
+	const menu = menus.find((m) => m.path === name);
+	emit('menu-selected', menu);
+	// console.log('menu', menu)
+};
 
 const handleNavClick = (routeName: string = 'home') => {
 	router.push(routeName);
+	console.log('handleNavClick', routeName)
+	onMenuSelect(routeName);
 };
-
-
-// 宽度
-
 </script>
 
 <template>
@@ -63,44 +72,16 @@ const handleNavClick = (routeName: string = 'home') => {
 			text-color="#fff"
 		>
 			<el-menu-item
+				v-for="item in menus"
 				:index="item.path"
 				@click="handleNavClick(item.routeName)"
-				v-for="item in menus"
 				:key="item.id"
 			>
-				<el-icon><HomeFilled /></el-icon>
-				<template #title>{{ item.name }} - {{ item.path }}</template>
-			</el-menu-item>
-			<!-- <el-sub-menu index="1" @click="handleNavClick()">
-				<template #title>
-					<el-icon><User /></el-icon>
-					<span>用户管理</span>
-				</template>
-				<el-menu-item-group>
-					<template #title><span>Group One</span></template>
-					<el-menu-item index="1-1">item one</el-menu-item>
-					<el-menu-item index="1-2">item two</el-menu-item>
-				</el-menu-item-group>
-				<el-menu-item-group title="Group Two">
-					<el-menu-item index="1-3">item three</el-menu-item>
-				</el-menu-item-group>
-				<el-sub-menu index="1-4">
-					<template #title><span>item four</span></template>
-					<el-menu-item index="1-4-1">item one</el-menu-item>
-				</el-sub-menu>
-			</el-sub-menu>
-			<el-menu-item index="2" @click="handleNavClick('roles')">
 				<el-icon>
-					<setting />
+					<component :is="item.icon" />
 				</el-icon>
-				<template #title>权限管理</template>
+				<template #title>{{ item.name }}</template>
 			</el-menu-item>
-			<el-menu-item index="3" @click="handleNavClick('menus')">
-				<el-icon>
-					<Menu />
-				</el-icon>
-				<template #title>菜单管理</template>
-			</el-menu-item> -->
 		</el-menu>
 	</div>
 </template>
@@ -109,6 +90,36 @@ const handleNavClick = (routeName: string = 'home') => {
 .el-menu-vertical-demo:not(.el-menu--collapse) {
 	width: 100%;
 	min-height: 100%;
-	min-width: 65px;
+}
+/* 针对菜单项的样式 */
+.el-menu-item {
+	display: flex; /* 使用flex布局 */
+	align-items: center; /* 垂直居中 */
+	justify-content: center; /* 水平居中 */
+}
+
+/* 针对子菜单标题的样式 */
+.el-submenu__title {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* 当菜单收缩时，隐藏文本标题 */
+.el-menu--collapse .el-menu-item__title,
+.el-menu--collapse .el-submenu__title-text {
+	display: none;
+}
+
+/* 可能需要调整内边距确保图标居中 */
+.el-menu--collapse .el-menu-item,
+.el-menu--collapse .el-submenu__title {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+/* 去除菜单边框 */
+.el-menu {
+	border: none;
 }
 </style>

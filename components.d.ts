@@ -25,6 +25,7 @@ declare module 'vue' {
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
+    ElTag: typeof import('element-plus/es')['ElTag']
     HeaderNav: typeof import('./src/components/HeaderNav.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -32,5 +33,6 @@ declare module 'vue' {
     SideNavMenu: typeof import('./src/components/SideNavMenu.vue')['default']
     TableTemplate: typeof import('./src/components/TableTemplate.vue')['default']
     TableTepmplate: typeof import('./src/components/TableTepmplate.vue')['default']
+    TagsNav: typeof import('./src/components/TagsNav.vue')['default']
   }
 }
