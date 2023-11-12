@@ -5,6 +5,7 @@ specifiers:
   '@types/node': ^20.9.0
   '@vitejs/plugin-vue': ^4.2.3
   axios: ^1.6.1
+  dayjs: ^1.11.10
   element-plus: ^2.4.2
   eslint-config-prettier: ^9.0.0
   eslint-plugin-prettier: ^5.0.1
@@ -23,6 +24,7 @@ specifiers:
 dependencies:
   '@element-plus/icons-vue': 2.1.0_vue@3.3.8
   axios: 1.6.1
+  dayjs: 1.11.10
   element-plus: 2.4.2_vue@3.3.8
   normalize.css: 8.0.1
   pinia: 2.1.7_typescript@5.2.2+vue@3.3.8

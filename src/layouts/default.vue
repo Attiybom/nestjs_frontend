@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { userMenuStore } from '../store/menus';
 
 const isCollapse = ref(false);
 
 const toggleCollapse = () => {
 	isCollapse.value = !isCollapse.value;
 };
+
+const { menus } = userMenuStore()
 </script>
 
 <template>
 	<div class="default-layout-container">
 		<!-- 左侧菜单 -->
 		<div class="left-container">
-			<SidebarNav :isCollapse="isCollapse" />
+			<SidebarNav :isCollapse="isCollapse" :menus="menus" />
 		</div>
 		<!-- 右侧内容 -->
 		<div  class="right-container">
@@ -34,7 +37,7 @@ const toggleCollapse = () => {
 			</el-row>
 			<!-- 主要内容区域 -->
 			<el-row class="right-main-container">
-				<el-col :span="24">
+				<el-col :span="24" class="main-container">
 					<router-view></router-view>
 				</el-col>
 			</el-row>
@@ -89,6 +92,11 @@ const toggleCollapse = () => {
 		.right-main-container {
 			flex: 1; /* 占据所有剩余空间 */
 			background-color: #63bbfa;
+
+			.main-container {
+				padding: 16px;
+				border-radius: 16px;
+			}
 		}
 	}
 }

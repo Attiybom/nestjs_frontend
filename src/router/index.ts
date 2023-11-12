@@ -21,8 +21,24 @@ const routes = [
     children: [
       {
         path: 'dashboard',
+        name: 'dashboard',
         component: () => import('@/views/dashboard/index.vue')
-      }
+      },
+      {
+        path: 'users',
+        name: 'users',
+        component: () => import('@/views/users/index.vue')
+      },
+      {
+        path: 'menus',
+        name: 'menus',
+        component: () => import('@/views/menus/index.vue')
+      },
+      {
+        path: 'roles',
+        name: 'roles',
+        component: () => import('@/views/roles/index.vue')
+      },
     ]
   },
 ] as RouteRecordRaw[]
