@@ -1,42 +1,82 @@
 <script setup>
 import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 
-const ruleFormRef = ref(null)
-const ruleForm = reactive({
-  pass: '',
-  checkPass: '',
-})
+// 表单实体
+const formRef = ref(null)
 
-function validatePass(params) {
-  console.log('validatePass'.params)
-}
-function validatePass2(params) {
-  console.log('validatePass2'.params)
-}
-
+// 校验规则
 const rules = reactive({
-  pass: [{ validator: validatePass, trigger: 'blur' }],
-  checkPass: [{ validator: validatePass2, trigger: 'blur' }],
+  username: [{ validator: validatePass, trigger: 'change' }],
+  password: [{ validator: validatePass2, trigger: 'change' }],
 })
+
+// 表单信息
+const userInfo = reactive({
+  username: 'email123@gmail.com',
+  password: 'qwe123',
+})
+
+
+// 账号校验函数
+function validatePass(rule, value, callback) {
+  console.log('validatePass-rule', rule)
+  console.log('validatePass-value', value)
+  console.log('validatePass-callback', callback)
+  // 使用正则表达式校验邮箱格式
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!value) {
+    callback(new Error('账号不能为空'));
+  } else if (!emailPattern.test(value)) {
+    callback(new Error('账号必须为邮箱格式，如email123@gmail.com'));
+  } else {
+    callback();
+  }
+}
+
+// 密码校验函数
+function validatePass2(rule, value, callback) {
+  console.log('validatePass2-rule', rule)
+  console.log('validatePass2-value', value)
+  console.log('validatePass2-callback', callback)
+  // 使用正则表达式校验密码复杂度
+  const passwordPattern = /^(?:(?=.*\d)(?=.*[a-zA-Z])|(?=.*\d)(?=.*[^\w\s])|(?=.*[a-zA-Z])(?=.*[^\w\s])).+$/;
+  if (!value) {
+    callback(new Error('密码不能为空'));
+  } else if (value.length < 6) {
+    callback(new Error('密码至少六位'))
+  } else if (!passwordPattern.test(value)) {
+    callback(new Error('请输入正确的密码'));
+  } else {
+    callback();
+  }
+}
+
+const router = useRouter()
+// 表单提交
+function submitForm() {
+  console.log('submitForm', userInfo)
+  router.push('/home')
+}
 
 </script>
 
 <template>
   <div class="login">
     <div class="form-container">
-      <el-form class="form" ref="ruleFormRef" :model="ruleForm" status-icon :rules="rules" label-width="auto"
-        label-position="top">
-        <el-form-item label="用户名:" prop="pass">
-          <el-input v-model="ruleForm.pass" type="password" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="密码:" prop="checkPass">
-          <el-input v-model="ruleForm.checkPass" type="password" autocomplete="off" />
-        </el-form-item>
-        <el-form-item>
-          <div class="btn-container">
-            <el-button type="primary" class="btn" @click="submitForm(ruleFormRef)">登录</el-button>
-            <router-link class="reg-container" to="register">
-              <el-button class="btn" @click="resetForm(ruleFormRef)">注册</el-button>
+                                    <el-form class="form" ref="formRef" show-message :model="userInfo" :rules="rules" label-width="auto"
+                                      label-position="top">
+                                      <el-form-item label="用户名:" prop="username">
+                                        <el-input v-model="userInfo.username" type="username" autocomplete="off" clearable />
+                                    </el-form-item>
+                                      <el-form-item label="密码:" prop="password">
+                                        <el-input v-model="userInfo.password" type="password" show-password autocomplete="off" clearable />
+                                      </el-form-item>
+                                      <el-form-item>
+                                        <div class="btn-container">
+                                          <el-button type="primary" class="btn" @click="submitForm()">登录</el-button>
+                                        <router-link class="reg-container" to="register">
+                                  <el-button class="btn">注册</el-button>
             </router-link>
           </div>
         </el-form-item>
@@ -83,6 +123,7 @@ const rules = reactive({
       margin-left: 0;
       margin: 8px 0;
     }
+
     .reg-container {
       text-align: center;
       width: 100%;
