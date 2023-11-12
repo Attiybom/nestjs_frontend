@@ -4,9 +4,9 @@
 </script>
 
 <template>
-  <div class="home">
+  <div class="dashboard">
     <h2>
-      home
+      dashboard
     </h2>
     <div>
 

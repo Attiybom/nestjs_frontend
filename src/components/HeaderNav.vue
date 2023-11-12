@@ -1,16 +1,53 @@
-<script setup lang="ts"></script>
-
 <template>
-	<div class="breadcrumb">
-		<el-breadcrumb separator="/">
-			<el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
-			<el-breadcrumb-item
-				><a href="/">promotion management</a></el-breadcrumb-item
-			>
-			<el-breadcrumb-item>promotion list</el-breadcrumb-item>
-			<el-breadcrumb-item>promotion detail</el-breadcrumb-item>
-		</el-breadcrumb>
-	</div>
+  <div>
+    <el-breadcrumb separator="/">
+      <el-breadcrumb-item
+        v-for="(item, index) in breadcrumbList"
+        :key="index"
+        :to="item.to"
+      >
+        {{ item.name }}
+      </el-breadcrumb-item>
+    </el-breadcrumb>
+    <!-- ... 其他内容 ... -->
+  </div>
 </template>
 
-<style lang="scss" scoped></style>
+<script>
+export default {
+  data() {
+    return {
+      // 初始化面包屑列表
+      breadcrumbList: [],
+    };
+  },
+  watch: {
+    // 监听路由变化，更新面包屑
+    $route: {
+      immediate: true,
+      handler(to) {
+        this.generateBreadcrumb(to);
+      },
+    },
+  },
+  methods: {
+    generateBreadcrumb(route) {
+      const routeMatched = route.matched;
+			this.breadcrumbList = routeMatched.map((m) => {
+				// console.log('m', m)
+
+        return {
+          name:   m.meta.title || m.path.split('/').pop(), // 使用元信息中的标题或路径名
+          to: this.getPath(m),
+        };
+			});
+			// console.log('breadcrumbList', this.breadcrumbList)
+    },
+    getPath(route) {
+      // 生成面包屑的链接，根据路由结构进行调整
+      const path = route.path;
+      return path ? { path } : '';
+    },
+  },
+};
+</script>

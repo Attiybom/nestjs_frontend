@@ -9,7 +9,7 @@ export const userMenuStore = defineStore('menu', {
     menus: [
       {
         id: 1,
-        name: '首页',
+        name: '控制台',
         path: 'dashboard',
         routeName: 'dashboard'
       },
