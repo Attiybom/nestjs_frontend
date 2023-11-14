@@ -1,99 +1,259 @@
 <template>
 	<div class="table-container">
+		<el-button @click="openAddModel('add')">新增</el-button>
 		<el-table :data="tableData" style="width: 100%" max-height="500">
-			<el-table-column fixed prop="date" label="Date" />
-			<el-table-column prop="name" label="Name" />
-			<el-table-column prop="state" label="State" />
-			<el-table-column prop="city" label="City" />
-			<el-table-column prop="address" label="Address" />
-			<el-table-column prop="zip" label="Zip" />
-			<el-table-column fixed="right" label="Operations">
+			<!-- <el-table-column fixed prop="date" label="Date" /> -->
+			<!-- <el-table-column prop="city" label="City" /> -->
+			<el-table-column prop="username" label="用户名" />
+			<el-table-column prop="profile.gender" label="性别">
+				<template #default="{ row }">
+					{{ row.profile.gender === 1 ? '男性' : '女性' }}
+				</template>
+			</el-table-column>
+			<!-- <el-table-column prop="role" label="头像" /> -->
+			<el-table-column prop="profile.address" label="地址" />
+			<el-table-column prop="profile.photo" label="头像" />
+			<el-table-column label="角色">
 				<template #default="scope">
-					<el-button
-						link
-						type="primary"
-						size="small"
-						@click.prevent="deleteRow(scope.$index)"
-					>
-						Remove
+					<span v-for="(role, index) in scope.row.roles" :key="role.id">
+						{{ role.name }}<span v-if="index < scope.row.roles.length - 1">, </span>
+					</span>
+				</template>
+			</el-table-column>
+			<el-table-column fixed="right" label="操作">
+				<template #default="scope">
+					<el-button link type="primary" size="small" @click.prevent="deleteRow(scope.$index, scope.row.id)">
+						删除
+					</el-button>
+					<el-button link type="primary" size="small" @click.prevent="openAddModel('edit', scope.row)">
+						编辑
 					</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
+
 		<el-button class="mt-4" style="width: 100%" @click="onAddItem">
 			Add Item
 		</el-button>
 
+		<!-- 新增模态框 -->
+		<el-dialog v-model="dialogFormVisible" title="新增用户">
+			<el-form :model="userForm">
+				<el-form-item label="用户名" :label-width="'140px'">
+					<el-input v-model="userForm.username" autocomplete="off" />
+				</el-form-item>
+				<el-form-item label="密码" :label-width="'140px'">
+					<el-input v-model="userForm.password" autocomplete="off" />
+				</el-form-item>
+				<el-form-item label="角色" :label-width="'140px'">
+					<el-checkbox-group v-model="userForm.roles">
+						<el-checkbox v-for="role in roles" :key="role.id" :label="role.id">
+							{{ role.name }}
+						</el-checkbox>
+					</el-checkbox-group>
+				</el-form-item>
+				<el-form-item label="性别" :label-width="'140px'">
+					<el-radio-group v-model="userForm.profile.gender" class="ml-4">
+						<el-radio label="1" size="large">男性</el-radio>
+						<el-radio label="2" size="large">女性</el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="头像" :label-width="'140px'">
+					<el-input v-model="userForm.profile.photo" autocomplete="off" />
+				</el-form-item>
+				<el-form-item label="地址" :label-width="'140px'">
+					<el-input v-model="userForm.profile.address" autocomplete="off" />
+				</el-form-item>
 
-		<el-pagination
-      class="pagination-container"
-			small
-			background
-			layout="prev, pager, next"
-			:total="50"
-		/>
+			</el-form>
+			<template #footer>
+				<span class="dialog-footer">
+					<el-button @click="dialogFormVisible = false">关闭</el-button>
+					<el-button type="primary" @click="handleAddUser()">
+						确认
+					</el-button>
+				</span>
+			</template>
+		</el-dialog>
+
+		<!-- 删除模态框 -->
+		<el-dialog v-model="deleteModalVisible" title="删除" width="30%">
+			<span>确定要删除该记录吗？</span>
+			<template #footer>
+				<span class="dialog-footer">
+					<el-button @click="handleDeleteRecord()">删除</el-button>
+					<el-button type="primary" @click="deleteModalVisible = false">
+						取消
+					</el-button>
+				</span>
+			</template>
+		</el-dialog>
+
+		<el-pagination class="pagination-container" small background layout="prev, pager, next" :total="50" />
 	</div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import dayjs from 'dayjs';
-
-const now = new Date();
+import { ref, onMounted, reactive } from 'vue';
+import { createUserReq, deleteUserReq, getUsersReq, updateUserReq } from '@/api/user';
+import { UserItem, RoleType } from '../types/user';
 
 const tableData = ref([
-	{
-		date: '2016-05-01',
-		name: 'Tom',
-		state: 'California',
-		city: 'Los Angeles',
-		address: 'No. 189, Grove St, Los Angeles',
-		zip: 'CA 90036',
-	},
-	{
-		date: '2016-05-02',
-		name: 'Tom',
-		state: 'California',
-		city: 'Los Angeles',
-		address: 'No. 189, Grove St, Los Angeles',
-		zip: 'CA 90036',
-	},
-	{
-		date: '2016-05-03',
-		name: 'Tom',
-		state: 'California',
-		city: 'Los Angeles',
-		address: 'No. 189, Grove St, Los Angeles',
-		zip: 'CA 90036',
-	},
-]);
+] as UserItem[]);
 
-const deleteRow = (index: number) => {
-	tableData.value.splice(index, 1);
+const deleteId = ref(0)
+const deleteRow = async (index: number, id: number) => {
+	// tableData.value.splice(index, 1);
+	deleteModalVisible.value = true
+	console.log('deleteRow-index', index)
+	console.log('deleteRow-id', id)
+	deleteId.value = id
+	// const deleteRes =  await deleteUserReq(id)
+	// console.log('deleteRes', deleteRes)
 };
+
+const handleDeleteRecord = async () => {
+	console.log('handleDeleteRecord', deleteId.value)
+		const deleteRes =  await deleteUserReq(deleteId.value)
+	console.log('deleteRes', deleteRes)
+	deleteModalVisible.value = false
+	await getUsers()
+}
 
 const onAddItem = () => {
-	now.setDate(now.getDate() + 1);
-	tableData.value.push({
-		date: dayjs(now).format('YYYY-MM-DD'),
-		name: 'Tom',
-		state: 'California',
-		city: 'Los Angeles',
-		address: 'No. 189, Grove St, Los Angeles',
-		zip: 'CA 90036',
-	});
+	// now.setDate(now.getDate() + 1);
+	// tableData.value.push({
+	// 	date: dayjs(now).format('YYYY-MM-DD'),
+	// 	name: 'Tom',
+	// 	state: 'California',
+	// 	city: 'Los Angeles',
+	// 	address: 'No. 189, Grove St, Los Angeles',
+	// 	zip: 'CA 90036',
+	// });
 };
+
+async function getUsers() {
+	const res = await getUsersReq() as unknown as UserItem[]
+	if (res && res.length > 0) {
+		tableData.value = res
+	}
+}
+
+//
+onMounted(async () => {
+	await getUsers()
+})
+
+
+// 模态框
+const dialogFormVisible = ref(false)
+const deleteModalVisible = ref(false)
+
+const userForm = reactive({
+	id: 0,
+	username: '',
+	password: '',
+	profile: {
+		gender: '1',
+		address: '',
+		photo: ''
+	},
+	roles: [],
+})
+
+const roles = [
+	{
+		id: 1,
+		name: '管理员'
+	},
+	{
+		id: 2,
+		name: '游客'
+	},
+	{
+		id: 3,
+		name: '普通用户'
+	},
+	{
+		id: 4,
+		name: '测试员'
+	}
+]
+
+const modalTitle = ref('新增')
+const openAddModel = (type: string, row?: any) => {
+	if (type === 'add') {
+		modalTitle.value = '新增'
+	} else {
+		modalTitle.value = '编辑'
+		console.log('row', row)
+		userForm.id = row.id
+		userForm.profile.address = row.profile.address
+		userForm.profile.gender = row.profile.gender + ''
+		userForm.profile.photo = row.profile.photo
+		userForm.username = row.username
+		userForm.roles = row.roles.map((role: RoleType) => role.id)
+	}
+	dialogFormVisible.value = true
+}
+
+async function handleAddUser() {
+
+
+	if (modalTitle.value === '新增') {
+		// 直接新增
+		console.log('create-userForm', userForm)
+		const res = await createUserReq(userForm)
+		console.log('createUserReq-res', res)
+		// 清空
+		Object.assign(userForm, {
+			username: '',
+			password: '',
+			profile: {
+				gender: '1',
+				address: '',
+				photo: ''
+			},
+			roles: [],
+		})
+		if (res.status === 201) {
+			console.log('创建成功')
+			await getUsers()
+		}
+	} else {
+		console.log('edit-userForm', userForm)
+
+		const updateRes = await updateUserReq(userForm.id, userForm)
+		console.log('updateRes', updateRes)
+		await getUsers()
+		// 清空
+		// Object.assign(userForm, {
+		// 	username: '',
+		// 	password: '',
+		// 	profile: {
+		// 		gender: '1',
+		// 		address: '',
+		// 		photo: ''
+		// 	},
+		// 	roles: [],
+		// })
+	}
+
+	dialogFormVisible.value = false
+}
+
 </script>
 
 <style scoped lang="scss">
 .table-container {
 	width: 100%;
 }
+
 .pagination-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  background-color: #fff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	background-color: #fff;
 }
 </style>
