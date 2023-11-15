@@ -20,9 +20,7 @@ const userInfo = reactive({
 
 // 账号校验函数
 function validatePass(rule, value, callback) {
-  console.log('validatePass-rule', rule)
-  console.log('validatePass-value', value)
-  console.log('validatePass-callback', callback)
+
   // 使用正则表达式校验邮箱格式
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!value) {
@@ -36,9 +34,6 @@ function validatePass(rule, value, callback) {
 
 // 密码校验函数
 function validatePass2(rule, value, callback) {
-  console.log('validatePass2-rule', rule)
-  console.log('validatePass2-value', value)
-  console.log('validatePass2-callback', callback)
   // 使用正则表达式校验密码复杂度
   const passwordPattern = /^(?:(?=.*\d)(?=.*[a-zA-Z])|(?=.*\d)(?=.*[^\w\s])|(?=.*[a-zA-Z])(?=.*[^\w\s])).+$/;
   if (!value) {
@@ -55,7 +50,6 @@ function validatePass2(rule, value, callback) {
 const router = useRouter()
 // 表单提交
 function submitForm() {
-  console.log('submitForm', userInfo)
   router.push('/home')
 }
 
