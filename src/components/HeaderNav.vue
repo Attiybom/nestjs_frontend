@@ -34,14 +34,11 @@ export default {
     generateBreadcrumb(route) {
       const routeMatched = route.matched;
 			this.breadcrumbList = routeMatched.map((m) => {
-				// console.log('m', m)
-
         return {
           name:   m.meta.title || m.path.split('/').pop(), // 使用元信息中的标题或路径名
           to: this.getPath(m),
         };
 			});
-			// console.log('breadcrumbList', this.breadcrumbList)
     },
     getPath(route) {
       // 生成面包屑的链接，根据路由结构进行调整

@@ -49,12 +49,10 @@ const emit = defineEmits(['menu-selected']);
 const onMenuSelect = (name: any) => {
 	const menu = menus.find((m) => m.path === name);
 	emit('menu-selected', menu);
-	// console.log('menu', menu)
 };
 
 const handleNavClick = (routeName: string = 'dashboard') => {
 	router.push(routeName);
-	console.log('handleNavClick', routeName);
 	onMenuSelect(routeName);
 };
 </script>

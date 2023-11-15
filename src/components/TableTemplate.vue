@@ -1,4 +1,25 @@
 <template>
+	<div class="search-container">
+		<el-form :inline="true" :model="searchForm" class="demo-form-inline">
+			<el-form-item label="用户名">
+				<el-input v-model="searchForm.username" placeholder="请选择用户名" clearable />
+			</el-form-item>
+			<el-form-item label="性别">
+				<el-select v-model="searchForm.gender" placeholder="请选择性别" clearable>
+					<el-option label="男性" value="1" />
+					<el-option label="女性" value="2" />
+				</el-select>
+			</el-form-item>
+			<el-form-item label="角色类型">
+				<el-select v-model="searchForm.role" clearable placeholder="请选中角色类型" style="width: 240px">
+					<el-option v-for="role in roles" :key="role.id" :label="role.name" :value="role.id" />
+				</el-select>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" @click="onSubmit">Query</el-button>
+			</el-form-item>
+		</el-form>
+	</div>
 	<div class="table-container">
 		<el-button @click="openAddModel('add')">新增</el-button>
 		<el-table :data="tableData" style="width: 100%" max-height="500">
@@ -22,7 +43,7 @@
 			</el-table-column>
 			<el-table-column fixed="right" label="操作">
 				<template #default="scope">
-					<el-button link type="primary" size="small" @click.prevent="deleteRow(scope.$index, scope.row.id)">
+					<el-button link type="primary" size="small" @click.prevent="deleteRow(scope.row.id)">
 						删除
 					</el-button>
 					<el-button link type="primary" size="small" @click.prevent="openAddModel('edit', scope.row)">
@@ -32,18 +53,14 @@
 			</el-table-column>
 		</el-table>
 
-		<el-button class="mt-4" style="width: 100%" @click="onAddItem">
-			Add Item
-		</el-button>
-
 		<!-- 新增模态框 -->
-		<el-dialog v-model="dialogFormVisible" title="新增用户">
+		<el-dialog v-model="dialogFormVisible" :title="modalTitle" @close="handleDialogClose">
 			<el-form :model="userForm">
 				<el-form-item label="用户名" :label-width="'140px'">
 					<el-input v-model="userForm.username" autocomplete="off" />
 				</el-form-item>
 				<el-form-item label="密码" :label-width="'140px'">
-					<el-input v-model="userForm.password" autocomplete="off" />
+					<el-input v-model="userForm.password" type="password" autocomplete="off" show-password />
 				</el-form-item>
 				<el-form-item label="角色" :label-width="'140px'">
 					<el-checkbox-group v-model="userForm.roles">
@@ -89,7 +106,8 @@
 			</template>
 		</el-dialog>
 
-		<el-pagination class="pagination-container" small background layout="prev, pager, next" :total="50" />
+		<el-pagination class="pagination-container" @current-change="handlePageChange" small background
+			layout="prev, pager, next" :total="50" />
 	</div>
 </template>
 
@@ -102,35 +120,20 @@ const tableData = ref([
 ] as UserItem[]);
 
 const deleteId = ref(0)
-const deleteRow = async (index: number, id: number) => {
+const deleteRow = async (id: number) => {
 	// tableData.value.splice(index, 1);
 	deleteModalVisible.value = true
-	console.log('deleteRow-index', index)
-	console.log('deleteRow-id', id)
+
 	deleteId.value = id
 	// const deleteRes =  await deleteUserReq(id)
-	// console.log('deleteRes', deleteRes)
+
 };
 
 const handleDeleteRecord = async () => {
-	console.log('handleDeleteRecord', deleteId.value)
-		const deleteRes =  await deleteUserReq(deleteId.value)
-	console.log('deleteRes', deleteRes)
+	await deleteUserReq(deleteId.value)
 	deleteModalVisible.value = false
 	await getUsers()
 }
-
-const onAddItem = () => {
-	// now.setDate(now.getDate() + 1);
-	// tableData.value.push({
-	// 	date: dayjs(now).format('YYYY-MM-DD'),
-	// 	name: 'Tom',
-	// 	state: 'California',
-	// 	city: 'Los Angeles',
-	// 	address: 'No. 189, Grove St, Los Angeles',
-	// 	zip: 'CA 90036',
-	// });
-};
 
 async function getUsers() {
 	const res = await getUsersReq() as unknown as UserItem[]
@@ -143,6 +146,18 @@ async function getUsers() {
 onMounted(async () => {
 	await getUsers()
 })
+
+const handlePageChange = async (e: number) => {
+	console.log('handlePageChange', e)
+	const res = await getUsersReq({
+		page: e
+	}) as unknown as UserItem[]
+	if (res && res.length > 0) {
+		tableData.value = res
+	} else {
+		tableData.value = []
+	}
+}
 
 
 // 模态框
@@ -184,14 +199,14 @@ const modalTitle = ref('新增')
 const openAddModel = (type: string, row?: any) => {
 	if (type === 'add') {
 		modalTitle.value = '新增'
-	} else {
+	} else if (type === 'edit') {
 		modalTitle.value = '编辑'
-		console.log('row', row)
 		userForm.id = row.id
 		userForm.profile.address = row.profile.address
 		userForm.profile.gender = row.profile.gender + ''
 		userForm.profile.photo = row.profile.photo
 		userForm.username = row.username
+		userForm.password = row.password
 		userForm.roles = row.roles.map((role: RoleType) => role.id)
 	}
 	dialogFormVisible.value = true
@@ -199,12 +214,9 @@ const openAddModel = (type: string, row?: any) => {
 
 async function handleAddUser() {
 
-
 	if (modalTitle.value === '新增') {
 		// 直接新增
-		console.log('create-userForm', userForm)
 		const res = await createUserReq(userForm)
-		console.log('createUserReq-res', res)
 		// 清空
 		Object.assign(userForm, {
 			username: '',
@@ -217,29 +229,57 @@ async function handleAddUser() {
 			roles: [],
 		})
 		if (res.status === 201) {
-			console.log('创建成功')
 			await getUsers()
 		}
 	} else {
-		console.log('edit-userForm', userForm)
 
-		const updateRes = await updateUserReq(userForm.id, userForm)
-		console.log('updateRes', updateRes)
+		await updateUserReq(userForm.id, userForm)
 		await getUsers()
 		// 清空
-		// Object.assign(userForm, {
-		// 	username: '',
-		// 	password: '',
-		// 	profile: {
-		// 		gender: '1',
-		// 		address: '',
-		// 		photo: ''
-		// 	},
-		// 	roles: [],
-		// })
+		Object.assign(userForm, {
+			username: '',
+			password: '',
+			profile: {
+				gender: '1',
+				address: '',
+				photo: ''
+			},
+			roles: [],
+		})
 	}
 
 	dialogFormVisible.value = false
+}
+
+
+const searchForm = reactive({
+	username: '',
+	gender: '',
+	role: '',
+})
+
+const onSubmit = async () => {
+	const res = await getUsersReq(searchForm) as unknown as UserItem[]
+	if (res && res.length > 0) {
+		tableData.value = res
+	} else {
+		tableData.value = []
+	}
+}
+
+// 新增/编辑模态框关闭
+const handleDialogClose = () => {
+	Object.assign(userForm, {
+		id: 0,
+		username: '',
+		password: '',
+		profile: {
+			gender: '1',
+			address: '',
+			photo: ''
+		},
+		roles: [],
+	})
 }
 
 </script>

@@ -1,9 +1,11 @@
 import instance from '../utils/request';
 
 // 获取全部用户信息
-export async function getUsersReq() {
+export async function getUsersReq(data: any = {}) {
 
-  const res = await instance.get('/user')
+  const res = await instance.get('/user', {
+    params: data
+  })
   return res
 }
 // 创建用户
