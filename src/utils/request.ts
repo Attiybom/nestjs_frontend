@@ -1,14 +1,19 @@
 import axios from "axios";
+import useUserStore from '../store/user';
 
 const instance = axios.create({
   baseURL: '/api/v1',
   timeout: 60000
 })
 
+
+
 // 添加请求拦截器
 instance.interceptors.request.use(function (config) {
 
-  // config.headers.Authorization = 2
+  const token = useUserStore().token || ''
+
+  config.headers.Authorization = 'Bearer ' + token
   // 在发送请求之前做些什么
   return config;
 }, function (error) {
@@ -21,7 +26,7 @@ instance.interceptors.response.use(function (response) {
   // 2xx 范围内的状态码都会触发该函数。
   // 对响应数据做点什么
 
-  if (response.status === 200) {
+  if (response.status.toString().startsWith('2')) {
     return response.data
   }
 

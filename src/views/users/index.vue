@@ -90,9 +90,9 @@ const openAddModel = (type: string, row?: any) => {
   } else if (type === 'edit') {
     modalTitle.value = '编辑'
     userForm.id = row.id
-    userForm.profile.address = row.profile.address
-    userForm.profile.gender = row.profile.gender + ''
-    userForm.profile.photo = row.profile.photo
+    userForm.profile.address = row.profile?.address
+    userForm.profile.gender = row.profile?.gender + ''
+    userForm.profile.photo = row.profile?.photo
     userForm.username = row.username
     userForm.password = row.password
     userForm.roles = row.roles.map((role: RoleType) => role.id)
@@ -196,14 +196,14 @@ const handleDialogClose = () => {
       </el-form>
     </div>
     <div class="table-container">
-      <el-button @click="openAddModel('add')">新增</el-button>
+      <el-button type="primary" @click="openAddModel('add')">新增</el-button>
       <el-table :data="tableData" style="width: 100%" max-height="500">
         <!-- <el-table-column fixed prop="date" label="Date" /> -->
         <!-- <el-table-column prop="city" label="City" /> -->
         <el-table-column prop="username" label="用户名" />
         <el-table-column prop="profile.gender" label="性别">
           <template #default="{ row }">
-            {{ row.profile.gender === 1 ? '男性' : '女性' }}
+            {{ row.profile && row.profile.gender === 1 ? '男性' : '女性' }}
           </template>
         </el-table-column>
         <!-- <el-table-column prop="role" label="头像" /> -->
@@ -273,8 +273,8 @@ const handleDialogClose = () => {
         <span>确定要删除该记录吗？</span>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="handleDeleteRecord()">删除</el-button>
-            <el-button type="primary" @click="deleteModalVisible = false">
+            <el-button type="primary" @click="handleDeleteRecord()">删除</el-button>
+            <el-button @click="deleteModalVisible = false">
               取消
             </el-button>
           </span>
