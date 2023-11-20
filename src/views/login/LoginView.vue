@@ -1,6 +1,12 @@
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+
+import { loginReq } from "../../api/login";
+import { LoginEnum } from '@/enum/login';
+import useUserStore from '../../store/user';
+
+const userStore = useUserStore()
 
 // 表单实体
 const formRef = ref(null)
@@ -19,7 +25,7 @@ const userInfo = reactive({
 
 
 // 账号校验函数
-function validatePass(rule, value, callback) {
+function validatePass(_rule: any, value: any, callback: any) {
 
   // 使用正则表达式校验邮箱格式
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,7 +39,7 @@ function validatePass(rule, value, callback) {
 }
 
 // 密码校验函数
-function validatePass2(rule, value, callback) {
+function validatePass2(_rule: any, value: any, callback: any) {
   // 使用正则表达式校验密码复杂度
   const passwordPattern = /^(?:(?=.*\d)(?=.*[a-zA-Z])|(?=.*\d)(?=.*[^\w\s])|(?=.*[a-zA-Z])(?=.*[^\w\s])).+$/;
   if (!value) {
@@ -48,8 +54,31 @@ function validatePass2(rule, value, callback) {
 }
 
 const router = useRouter()
+interface LoginResType {
+  access_token: string
+}
+
 // 表单提交
-function submitForm() {
+async function submitForm() {
+  const { username, password } = userInfo
+
+  const res = await loginReq({ username, password })
+
+  console.log('login-res', res)
+
+  const { access_token = '' } = res  as unknown as LoginResType
+
+  if (access_token) {
+    localStorage.setItem(LoginEnum.USER_TOKEN, access_token)
+    userStore.$patch({
+      token: access_token
+    })
+  }
+
+  // if (res.access_token) {
+  //   local
+  // }
+
   router.push('/home')
 }
 
@@ -58,19 +87,19 @@ function submitForm() {
 <template>
   <div class="login">
     <div class="form-container">
-                                    <el-form class="form" ref="formRef" show-message :model="userInfo" :rules="rules" label-width="auto"
-                                      label-position="top">
-                                      <el-form-item label="用户名:" prop="username">
-                                        <el-input v-model="userInfo.username" type="username" autocomplete="off" clearable />
-                                    </el-form-item>
-                                      <el-form-item label="密码:" prop="password">
-                                        <el-input v-model="userInfo.password" type="password" show-password autocomplete="off" clearable />
-                                      </el-form-item>
-                                      <el-form-item>
-                                        <div class="btn-container">
-                                          <el-button type="primary" class="btn" @click="submitForm()">登录</el-button>
-                                        <router-link class="reg-container" to="register">
-                                  <el-button class="btn">注册</el-button>
+      <el-form class="form" ref="formRef" show-message :model="userInfo" :rules="rules" label-width="auto"
+        label-position="top">
+        <el-form-item label="用户名:" prop="username">
+          <el-input v-model="userInfo.username" type="username" autocomplete="off" clearable />
+        </el-form-item>
+        <el-form-item label="密码:" prop="password">
+          <el-input v-model="userInfo.password" type="password" show-password autocomplete="off" clearable />
+        </el-form-item>
+        <el-form-item>
+          <div class="btn-container">
+            <el-button type="primary" class="btn" @click="submitForm()">登录</el-button>
+            <router-link class="reg-container" to="register">
+              <el-button class="btn">注册</el-button>
             </router-link>
           </div>
         </el-form-item>
