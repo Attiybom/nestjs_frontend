@@ -29,7 +29,7 @@ export default defineConfig({
     ]
   },
   server: {
-    port: 4000,
+    port: 4111,
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:3000'

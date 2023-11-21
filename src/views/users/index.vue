@@ -177,7 +177,7 @@ const handleDialogClose = () => {
     <div class="search-container">
       <el-form :inline="true" :model="searchForm" class="demo-form-inline">
         <el-form-item label="用户名">
-          <el-input v-model="searchForm.username" placeholder="请选择用户名" clearable />
+          <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable />
         </el-form-item>
         <el-form-item label="性别">
           <el-select v-model="searchForm.gender" placeholder="请选择性别" clearable>
@@ -191,7 +191,7 @@ const handleDialogClose = () => {
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">Query</el-button>
+          <el-button type="primary" @click="onSubmit">搜索</el-button>
         </el-form-item>
       </el-form>
     </div>

@@ -64,7 +64,7 @@ async function submitForm() {
 
   const res = await loginReq({ username, password })
 
-  console.log('login-res', res)
+  // console.log('login-res', res)
 
   const { access_token = '' } = res  as unknown as LoginResType
 
