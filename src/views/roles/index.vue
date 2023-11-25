@@ -148,7 +148,7 @@ const handleDialogClose = () => {
         <el-form-item label="角色名" :label-width="'140px'">
           <el-input v-model="roleForm.role" autocomplete="off" placeholder="请输入角色名称" />
         </el-form-item>
-        <el-form-item label="角色" :label-width="'140px'">
+        <el-form-item label="菜单" :label-width="'140px'">
           <el-checkbox-group v-model="roleForm.permission">
             <el-checkbox v-for="permission in permissions" :key="permission.id" :label="permission.id">
               {{ permission.name }}
