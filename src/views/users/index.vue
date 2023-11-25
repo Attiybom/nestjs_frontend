@@ -75,7 +75,7 @@ const roles = [
   },
   {
     id: 3,
-    name: '普通用户'
+    name: '编辑员'
   },
   {
     id: 4,
@@ -104,38 +104,23 @@ async function handleAddUser() {
 
   if (modalTitle.value === '新增') {
     // 直接新增
-    const res = await createUserReq(userForm)
-    // 清空
-    Object.assign(userForm, {
-      username: '',
-      password: '',
-      profile: {
-        gender: '1',
-        address: '',
-        photo: ''
-      },
-      roles: [],
-    })
-    if (res.status === 201) {
-      await getUsers()
-    }
+    await createUserReq(userForm)
   } else {
-
     await updateUserReq(userForm.id, userForm)
-    await getUsers()
-    // 清空
-    Object.assign(userForm, {
-      username: '',
-      password: '',
-      profile: {
-        gender: '1',
-        address: '',
-        photo: ''
-      },
-      roles: [],
-    })
   }
 
+  Object.assign(userForm, {
+    username: '',
+    password: '',
+    profile: {
+      gender: '1',
+      address: '',
+      photo: ''
+    },
+    roles: [],
+  })
+
+  await getUsers()
   dialogFormVisible.value = false
 }
 

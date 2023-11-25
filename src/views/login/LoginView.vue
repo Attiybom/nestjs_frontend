@@ -19,8 +19,8 @@ const rules = reactive({
 
 // 表单信息
 const userInfo = reactive({
-  username: 'email123@gmail.com',
-  password: 'qwe123',
+  username: 'email456@gmail.com',
+  password: '123456',
 })
 
 
